@@ -1,20 +1,20 @@
-package org.joyofcoding.objectcalisthenics.assertions;
+package objectcalisthenic.assertions;
 
+import objectcalisthenic.domain.GildedItem;
 import org.fest.assertions.api.AbstractIterableAssert;
 import org.fest.assertions.api.Assertions;
-import org.joyofcoding.objectcalisthenics.Item;
 
 import static org.fest.assertions.api.Assertions.extractProperty;
 
 public class ItemsAssert extends
-        AbstractIterableAssert<ItemsAssert, Iterable<Item>, Item> {
+        AbstractIterableAssert<ItemsAssert, Iterable<GildedItem>, GildedItem> {
 
 
-    protected ItemsAssert(Iterable<Item> actual) {
+    protected ItemsAssert(Iterable<GildedItem> actual) {
         super(actual, ItemsAssert.class);
     }
 
-    public static ItemsAssert assertThat(Iterable<Item> actual) {
+    public static ItemsAssert assertThat(Iterable<GildedItem> actual) {
         return new ItemsAssert(actual);
     }
 

@@ -1,6 +1,8 @@
-package org.joyofcoding.objectcalisthenics;
+package objectcalisthenic;
 
-import org.joyofcoding.objectcalisthenics.assertions.ItemsAssert;
+import objectcalisthenic.assertions.ItemsAssert;
+import objectcalisthenic.domain.GildedItem;
+import objectcalisthenic.service.GildedService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,14 +13,12 @@ import java.util.Random;
 public class GildedRoseTest {
     private static final int MAX_BACKSTAGE_SELLIN = 30;
     private static final int MAX_QUALITY = 50;
-    private GildedRose gildedRose;
-    private List<Item> items;
+    private GildedService gildedService;
     private Random rand = new Random(3456789);
 
     @Before
     public void setup() {
-        gildedRose = new GildedRose();
-        items = gildedRose.makeItems().qualityItems();
+        gildedService = new GildedService();
     }
 
     @Test
@@ -26,7 +26,7 @@ public class GildedRoseTest {
     after_one_day() throws Exception {
         repeatUpdateQuality(1);
 
-        ItemsAssert.assertThat(items)
+        ItemsAssert.assertThat(gildedService.findAll())
                 .containsOnlyItemNames("+5 Dexterity Vest",
                         "Aged Brie",
                         "Elixir of the Mongoose",
@@ -43,7 +43,7 @@ public class GildedRoseTest {
     after_three_days() throws Exception {
         repeatUpdateQuality(3);
 
-        ItemsAssert.assertThat(items)
+        ItemsAssert.assertThat(gildedService.findAll())
                 .containsOnlyItemNames("+5 Dexterity Vest",
                         "Aged Brie",
                         "Elixir of the Mongoose",
@@ -59,7 +59,7 @@ public class GildedRoseTest {
     after_a_shitload_of_days() throws Exception {
         repeatUpdateQuality(500);
 
-        ItemsAssert.assertThat(items)
+        ItemsAssert.assertThat(gildedService.findAll())
                 .containsOnlyItemNames("+5 Dexterity Vest",
                         "Aged Brie",
                         "Elixir of the Mongoose",
@@ -73,10 +73,14 @@ public class GildedRoseTest {
     @Test
     public void
     backstage_pass_golden_copy() throws Exception {
-        items = aBunchOfBackstagePasses();
-        repeatUpdateQuality(11);
+        final List<GildedItem> gildedItemList = aBunchOfBackstagePasses();
+        gildedService.clear();
+        for (GildedItem gildedItem : gildedItemList) {
+            gildedService.add(gildedItem);
+        }
 
-        ItemsAssert.assertThat(items)
+        repeatUpdateQuality(11);
+        ItemsAssert.assertThat(gildedService.findAll())
                 .containsOnlyItemQualities(30, 48, 45, 0, 11, 0, 0, 0, 36, 15, 33, 50, 50, 27, 0, 26, 42, 50, 0, 50, 50, 0, 29, 0, 0, 36, 50, 41, 50,
                         0, 49, 25, 0, 12, 0, 50, 0, 0, 0, 43, 0, 50, 23, 27, 33, 0, 0, 37, 0, 43, 0, 0, 45, 50, 22, 43, 0, 30, 14, 44, 50, 0, 17, 0, 17, 50,
                         16, 50, 19, 44, 0, 0, 37, 34, 0, 0, 0, 50, 0, 29, 40, 50, 50, 47, 0, 0, 47, 0, 26, 11, 26, 16, 0, 50, 0, 0, 0, 35, 0, 50)
@@ -87,12 +91,12 @@ public class GildedRoseTest {
 
     private void repeatUpdateQuality(int times) {
         for (int i = 0; i < times; i++) {
-            gildedRose.updateQuality(items);
+            gildedService.updateQuality();
         }
     }
 
-    private List<Item> aBunchOfBackstagePasses() {
-        List<Item> listOfPasses = new ArrayList<Item>();
+    private List<GildedItem> aBunchOfBackstagePasses() {
+        List<GildedItem> listOfPasses = new ArrayList<GildedItem>();
         for (int i = 0; i < 100; i++) {
             listOfPasses.add(aRandomBackstagePass());
         }
@@ -107,10 +111,9 @@ public class GildedRoseTest {
         return rand.nextInt(MAX_QUALITY);
     }
 
-    private Item aRandomBackstagePass() {
+    private GildedItem aRandomBackstagePass() {
         int quality = randomQuality();
         int sellIn = randomSellIn();
-        return new Item("Backstage passes to a TAFKAL80ETC concert", sellIn, quality);
+        return new GildedItem("Backstage passes to a TAFKAL80ETC concert", sellIn, quality);
     }
-
 }
